@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
+using UnityEngine.XR.Interaction.Toolkit;
 
 namespace ConvaiMR
 {
@@ -11,13 +12,12 @@ namespace ConvaiMR
     {
         [Header("AR Foundation Components")]
         [SerializeField] private ARSession arSession;
-        [SerializeField] private ARSessionOrigin arSessionOrigin;
+        [SerializeField] private XROrigin xrOrigin;
         [SerializeField] private ARPlaneManager arPlaneManager;
         [SerializeField] private ARRaycastManager arRaycastManager;
         [SerializeField] private ARPlaneMeshVisualizer planeMeshVisualizer;
         
         [Header("Plane Detection Settings")]
-        [SerializeField] private DetectedPlaneGenerator detectedPlaneGenerator;
         [SerializeField] private Material planeMaterial;
         [SerializeField] private Material lineMaterial;
         
@@ -44,14 +44,14 @@ namespace ConvaiMR
                 }
             }
             
-            // Setup AR Session Origin
-            if (arSessionOrigin == null)
+            // Setup XR Origin
+            if (xrOrigin == null)
             {
-                arSessionOrigin = FindObjectOfType<ARSessionOrigin>();
-                if (arSessionOrigin == null)
+                xrOrigin = FindObjectOfType<XROrigin>();
+                if (xrOrigin == null)
                 {
-                    GameObject originGO = new GameObject("AR Session Origin");
-                    arSessionOrigin = originGO.AddComponent<ARSessionOrigin>();
+                    GameObject originGO = new GameObject("XR Origin");
+                    xrOrigin = originGO.AddComponent<XROrigin>();
                     
                     // Add AR Camera
                     Camera arCamera = originGO.GetComponent<Camera>();
@@ -69,7 +69,7 @@ namespace ConvaiMR
                 arPlaneManager = FindObjectOfType<ARPlaneManager>();
                 if (arPlaneManager == null)
                 {
-                    arPlaneManager = arSessionOrigin.gameObject.AddComponent<ARPlaneManager>();
+                    arPlaneManager = xrOrigin.gameObject.AddComponent<ARPlaneManager>();
                 }
             }
             
@@ -103,27 +103,14 @@ namespace ConvaiMR
                 arRaycastManager = FindObjectOfType<ARRaycastManager>();
                 if (arRaycastManager == null)
                 {
-                    arRaycastManager = arSessionOrigin.gameObject.AddComponent<ARRaycastManager>();
+                    arRaycastManager = xrOrigin.gameObject.AddComponent<ARRaycastManager>();
                 }
             }
             
-            // Setup Detected Plane Generator for visualization
-            if (detectedPlaneGenerator == null)
+            // Configure plane visualization materials
+            if (planeMaterial != null && lineMaterial != null)
             {
-                detectedPlaneGenerator = FindObjectOfType<DetectedPlaneGenerator>();
-                if (detectedPlaneGenerator == null)
-                {
-                    GameObject planeGenGO = new GameObject("Detected Plane Generator");
-                    detectedPlaneGenerator = planeGenGO.AddComponent<DetectedPlaneGenerator>();
-                }
-            }
-            
-            // Configure plane visualization
-            if (detectedPlaneGenerator != null)
-            {
-                detectedPlaneGenerator.planeMaterial = planeMaterial;
-                detectedPlaneGenerator.lineMaterial = lineMaterial;
-                detectedPlaneGenerator.enabled = enableDebugVisualization;
+                Debug.Log("[ARFoundationSetup] Plane materials configured for visualization");
             }
             
             Debug.Log("[ARFoundationSetup] AR Foundation setup completed!");
@@ -206,10 +193,10 @@ namespace ConvaiMR
         
         public void TogglePlaneVisualization()
         {
-            if (detectedPlaneGenerator != null)
+            if (arPlaneManager != null)
             {
-                detectedPlaneGenerator.enabled = !detectedPlaneGenerator.enabled;
-                Debug.Log($"[ARFoundationSetup] Plane visualization: {(detectedPlaneGenerator.enabled ? "ON" : "OFF")}");
+                arPlaneManager.enabled = !arPlaneManager.enabled;
+                Debug.Log($"[ARFoundationSetup] Plane detection: {(arPlaneManager.enabled ? "ON" : "OFF")}");
             }
         }
         

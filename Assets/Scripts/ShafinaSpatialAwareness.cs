@@ -38,6 +38,7 @@ namespace ConvaiMR
         private ARRaycastManager arRaycastManager;
         private Camera arCamera;
         private Transform avatarTransform;
+        private UnityEngine.XR.Interaction.Toolkit.XROrigin xrOrigin;
         
         // Spatial awareness data
         private Dictionary<Vector3, SpatialObject> detectedObjects = new Dictionary<Vector3, SpatialObject>();
@@ -100,6 +101,7 @@ namespace ConvaiMR
             // Get AR Foundation components
             arPlaneManager = FindObjectOfType<ARPlaneManager>();
             arRaycastManager = FindObjectOfType<ARRaycastManager>();
+            xrOrigin = FindObjectOfType<UnityEngine.XR.Interaction.Toolkit.XROrigin>();
             arCamera = Camera.main;
             
             if (arPlaneManager == null)
